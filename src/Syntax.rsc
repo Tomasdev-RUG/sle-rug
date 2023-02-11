@@ -6,28 +6,69 @@ extend lang::std::Id;
 /*
  * Concrete syntax of QL
  */
-
 start syntax Form 
-  = "form" Id name "{" Question* questions "}"; 
+  = "form" Id "{" Question* "}"; 
 
-// TODO: question, computed question, block, if-then-else, if-then
-syntax Question = ;
+/* TODO: question, computed question, block, if-then-else, if-then */
+syntax Question = StrLiteral Prompt
+                | "if" "(" Expr ")" "{" Question* "}" ElseStatement?
+                ;
 
-// TODO: +, -, *, /, &&, ||, !, >, <, <=, >=, ==, !=, literals (bool, int, str)
-// Think about disambiguation using priorities and associativity
-// and use C/Java style precedence rules (look it up on the internet)
+syntax ElseStatement  = "else" "{" Question* "}"
+                  ;
+
+syntax Prompt = Id ":" Type ("=" Expr)?;
+
+/*
+ * TODO: +, -, *, /, &&, ||, !, >, <, <=, >=, ==, !=, literals (bool, int, str)
+ * Think about disambiguation using priorities and associativity
+ * and use C/Java style precedence rules (look it up on the internet)
+ */
 syntax Expr 
-  = Id \ "true" \ "false" // true/false are reserved keywords.
+  = Term
+  | "(" Expr ")"
+  > right ( neg: "!" Expr
+          | umin: "-" Expr e )
+  > binaryOp: BinaryOp
   ;
-  
-syntax Type = ;
 
-lexical Str = ;
+syntax BinaryOp
+  = left  ( mul: Expr l "*" Expr r
+          | div: Expr l "/" Expr r )
+  > left  ( add: Expr l "+" Expr r
+          | min: Expr l "-" Expr r )
+  > left  ( greth: Expr l "\>" Expr r
+          | leth:  Expr l "\<" Expr r
+          | leq: Expr l "\<=" Expr r
+          | geq: Expr l "\>=" Expr r)
+  > left  ( eqls:  Expr l "==" Expr r
+          | neq: Expr l "!=" Expr r )
+  > left    and: Expr l "&&" Expr r
+  > left    or:  Expr l "||" Expr r
+  ;
 
-lexical Int 
-  = ;
+syntax Type
+  = Str
+  | Int
+  | Bool
+  ;
 
-lexical Bool = ;
+syntax Term
+  = Id \ "true" \ "false"
+  | StrLiteral
+  | IntLiteral
+  | BoolLiteral
+  ;
+
+/* literals */
+lexical Str = "str";
+syntax StrLiteral =  [\"] ![\"]* [\"];
+
+lexical Int = "integer";
+syntax IntLiteral = [0-9]+;
+
+lexical Bool = "boolean";
+syntax BoolLiteral = "true" | "false";
 
 
 

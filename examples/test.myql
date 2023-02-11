@@ -1,0 +1,43 @@
+form testExample { 
+    "hello"
+        strtest: str
+    
+    "readonly int"
+        inttest2: integer = (10 * inttest) - 10
+
+    "nice"
+        inttest: integer
+    
+    "this is a boolean"
+        booltest: boolean = true
+
+    "changeBool"
+        cBool: boolean        
+
+    "this is an or"
+        orBool: boolean = booltest && cBool
+
+    if ((inttest * inttest) > 100) {
+        "What was the selling price?"
+            sellingPrice: integer
+    }  
+
+    if(cBool && ((inttest *inttest) > 100)) {
+        "hello there"
+            helloThere: integer
+    }
+
+    if(cBool) {
+        "wassup"
+            wasSupp: integer
+    }
+    else {
+        "bool is false"
+            boolIsFalse: integer
+    }
+
+    if(strtest == "hello") {
+        "string is hello"
+            stringIsHello: integer
+    }
+}
